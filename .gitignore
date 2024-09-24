@@ -199,3 +199,5 @@ $RECYCLE.BIN/
 *.lnk
 
 app.py
+__pycache__
+mientorno
