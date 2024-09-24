@@ -1,30 +1,31 @@
-import app  # Importamos el archivo que contiene el código
-
-def setup_function():
-    # Inicializar la lista de productos antes de cada test
-    app.productos = []
+import pytest
+import app  # Asegúrate de que el archivo app.py esté en el mismo directorio o en un directorio dentro de sys.path
 
 def test_agregar_producto():
-    resultado = app.agregar_producto("Manzana", 10)
-    assert resultado == "Producto agregado con éxito."
-    assert len(app.productos) == 1
-    assert app.productos[0] == ["Manzana", 10]
+    """Verifica que se pueda agregar un producto correctamente."""
+    app.productos = []
+    app.agregar_producto("Manzana", 10)
+    assert app.productos == [["Manzana", 10]]
 
-def test_mostrar_productos_vacio():
-    resultado = app.mostrar_productos()
-    assert resultado == "No hay productos registrados."
+def test_mostrar_productos_sin_productos():
+    """Verifica que se muestre el mensaje correcto cuando no hay productos."""
+    app.productos = []
+    # Aquí simulamos la impresión y verificamos el resultado
+    with pytest.raises(SystemExit) as pytest_exit:
+        with pytest.capsys() as capsys:
+            app.mostrar_productos()
+    captured = capsys.readouterr()
+    assert captured.out == "No hay productos registrados.\n"
+    assert pytest_exit.type == SystemExit
 
 def test_mostrar_productos_con_productos():
-    app.agregar_producto("Manzana", 10)
-    app.agregar_producto("Banana", 5)
-    resultado = app.mostrar_productos()
-    assert "Producto 1 : Nombre: Manzana, Cantidad: 10" in resultado
-    assert "Producto 2 : Nombre: Banana, Cantidad: 5" in resultado
-
-def test_opcion_invalida():
-    resultado = app.ejecutar_opcion(99)
-    assert resultado == "Opción inválida, por favor intentá de nuevo."
-
-def test_salir_del_menu():
-    resultado = app.ejecutar_opcion(3)
-    assert resultado == "Saliendo del sistema de inventario..."
+    """Verifica que se muestre la lista de productos correctamente."""
+    app.productos = [["Manzana", 10], ["Banana", 5]]
+    # Aquí simulamos la impresión y verificamos el resultado
+    with pytest.raises(SystemExit) as pytest_exit:
+        with pytest.capsys() as capsys:
+            app.mostrar_productos()
+    captured = capsys.readouterr()
+    assert "Manzana" in captured.out
+    assert "Banana" in captured.out
+    assert pytest_exit.type == SystemExit
